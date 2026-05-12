@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doodh Khata Pro</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%);color:#e2e8f0;min-height:100vh;padding:15px}
+.container{max-width:450px;margin:0 auto}
+.card{background:rgba(30,41,59,0.7);backdrop-filter:blur(10px);border:1px solid rgba(56,189,248,0.3);border-radius:20px;padding:25px;margin:15px 0;box-shadow:0 8px 32px rgba(0,0,0,0.3)}
+h1{font-size:32px;font-weight:700;text-align:center;margin-bottom:5px;background:linear-gradient(90deg,#38bdf8,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:20px;margin-bottom:15px;color:#38bdf8}
+.subtitle{text-align:center;color:#94a3b8;font-size:14px;margin-bottom:20px}
+input,select,textarea{width:100%;background:#1e293b;border:2px solid #334155;color:#e2e8f0;padding:12px;border-radius:12px;margin:8px 0;font-size:16px}
+input:focus,select:focus{border-color:#38bdf8;outline:none}
+.btn{width:100%;background:linear-gradient(135deg,#1e293b,#0f172a);border:2px solid #38bdf8;color:#e2e8f0;padding:14px;margin:8px 0;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(56,189,248,0.4)}
+.btn:active{transform:scale(0.98)}
+.btn-small{padding:8px 12px;font-size:14px;width:auto;display:inline-block;margin:4px}
+.btn-green{border-color:#22c55e}
+.btn-red{border-color:#ef4444}
+.btn-purple{border-color:#a855f7}
+.hidden{display:none}
+.flex{display:flex;gap:10px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.customer-card{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:15px;margin:10px 0}
+.customer-name{font-size:18px;font-weight:600;color:#38bdf8}
+.customer-info{font-size:13px;color:#94a3b8;margin:5px 0}
+.entry-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #334155;font-size:14px}
+.total-box{background:rgba(34,197,94,0.1);border:1px solid #22c55e;border-radius:12px;padding:15px;margin:15px 0;text-align:center}
+.total-amount{font-size:28px;font-weight:700;color:#22c55e}
+.tab-btn{background:#1e293b;border:1px solid #334155;padding:10px;border-radius:8px;flex:1;cursor:pointer}
+.tab-btn.active{border-color:#38bdf8;background:rgba(56,189,248,0.1)}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}
+.stat-card{background:#1e293b;padding:15px;border-radius:12px;text-align:center;border:1px solid #334155}
+.stat-label{font-size:12px;color:#94a3b8}
+.stat-value{font-size:22px;font-weight:700;color:#38bdf8;margin-top:5px}
+.credit{text-align:center;font-size:12px;color:#64748b;margin-top:20px;letter-spacing:0.5px}
+.alert{padding:12px;border-radius:12px;margin:10px 0;text-align:center;font-size:14px}
+.alert-success{background:rgba(34,197,94,0.2);border:1px solid #22c55e;color:#22c55e}
+.alert-error{background:rgba(239,68,68,0.2);border:1px solid #ef4444;color:#ef4444}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div id="loginScreen" class="card">
+  <h1>DOODH KHATA PRO</h1>
+  <p class="subtitle">Apna Doodh Ka Hisab Digital Karo</p>
+  <div id="loginForm">
+    <input type="text" id="username" placeholder="Username" autocomplete="off">
+    <input type="password" id="password" placeholder="Password" autocomplete="off">
+    <button class="btn" onclick="login()">Login Karo</button>
+    <button class="btn btn-purple" onclick="showRegister()">Naya Account Banao</button>
+    <button class="btn" style="border-color:#475569" onclick="showForgot()">Password Bhool Gaya?</button>
+  </div>
+  <div id="registerForm" class="hidden">
+    <input type="text" id="regUser" placeholder="Username">
+    <input type="email" id="regEmail" placeholder="Email">
+    <input type="password" id="regPass" placeholder="Password">
+    <button class="btn" onclick="register()">Register Karo</button>
+    <button class="btn" style="border-color:#475569" onclick="showLogin()">Wapis Login</button>
+  </div>
+  <div id="forgotForm" class="hidden">
+    <input type="email" id="forgotEmail" placeholder="Apna Email Daalo">
+    <button class="btn" onclick="sendCode()">Code Bhejo</button>
+    <div id="codeDiv" class="hidden">
+      <input type="text" id="resetCode" placeholder="4-Digit Code">
+      <input type="password" id="newPass" placeholder="Naya Password">
+      <button class="btn" onclick="resetPassword()">Password Badlo</button>
+    </div>
+    <button class="btn" style="border-color:#475569" onclick="showLogin()">Wapis Login</button>
+  </div>
+  <div id="loginAlert"></div>
+  <div class="credit">Created by Umair Mehboob</div>
+</div>
+
+<div id="mainApp" class="hidden">
+  <div class="card">
+    <div class="flex" style="justify-content:space-between;align-items:center;margin-bottom:15px">
+      <h2 id="welcomeUser">Welcome</h2>
+      <button class="btn-small btn-red" onclick="logout()">Logout</button>
+    </div>
+    <div class="flex">
+      <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
+      <button class="tab-btn" onclick="showTab('customer')">Customer</button>
+      <button class="tab-btn" onclick="showTab('entry')">Entry</button>
+    </div>
+  </div>
+
+  <div id="dashboard" class="tab-content">
+    <div class="card">
+      <h2>Aaj Ka Hisab</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Aaj Ka Doodh</div>
+          <div class="stat-value" id="todayLiters">0 L</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Aaj Ki Kamaai</div>
+          <div class="stat-value" id="todayAmount">0 Rs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Month Total</div>
+          <div class="stat-value" id="monthAmount">0 Rs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Udhaar</div>
+          <div class="stat-value" id="pendingAmount">0 Rs</div>
+        </div>
+      </div>
+      <div class="flex">
+        <button class="btn btn-green" onclick="generatePDF('week')">Hafta PDF</button>
+        <button class="btn btn-green" onclick="generatePDF('month')">Month PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="customer" class="tab-content hidden">
+    <div class="card">
+      <h2>Customer Add Karo</h2>
+      <input type="text" id="custName" placeholder="Naam">
+      <input type="text" id="custPhone" placeholder="Phone Number">
+      <input type="text" id="custAddress" placeholder="Address">
+      <div class="grid-2">
+        <input type="number" id="custRate" placeholder="Rate/L" value="180">
+        <select id="custSlot">
+          <option value="Subah">Subah</option>
+          <option value="Shaam">Shaam</option>
+          <option value="Dono">Dono</option>
+        </select>
+      </div>
+      <button class="btn" onclick="addCustomer()">Customer Save Karo</button>
+    </div>
+    <div class="card">
+      <h2>Customer List</h2>
+      <div id="customerList"></div>
+    </div>
+  </div>
+
+  <div id="entry" class="tab-content hidden">
+    <div class="card">
+      <h2>Daily Entry Daalo</h2>
+      <input type="date" id="entryDate">
+      <select id="entryCustomer"></select>
+      <div class="grid-2">
+        <input type="number" id="entryLiters" placeholder="Kitne Liter" step="0.5">
+        <select id="entrySlot">
+          <option value="Subah">Subah</option>
+          <option value="Shaam">Shaam</option>
+        </select>
+      </div>
+      <textarea id="entryNote" placeholder="Note: Paisa baad me dega" rows="2"></textarea>
+      <div class="flex">
+        <button class="btn" onclick="addEntry()">Entry Save</button>
+        <button class="btn btn-purple" onclick="markPaid()">Paid Mark</button>
+      </div>
+    <div class="card">
+      <h2>Aaj Ki Entries</h2>
+      <div id="entryList"></div>
+    </div>
+  </div>
+
+  <div class="credit">Created by Umair Mehboob</div>
+</div>
+
+</div>
+
+<script>
+let currentUser=null;
+let resetCodeTemp=null;
+const { jsPDF } = window.jspdf;
+
+window.onload=function(){
+  let saved=localStorage.getItem('doodhUser');
+  let expiry=localStorage.getItem('doodhExpiry');
+  if(saved&&expiry&&new Date().getTime()<expiry){
+    currentUser=saved;
+    showMainApp();
+  }
+  document.getElementById('entryDate').valueAsDate=new Date();
+}
+
+function showLogin(){
+  document.getElementById('loginForm').classList.remove('hidden');
+  document.getElementById('registerForm').classList.add('hidden');
+  document.getElementById('forgotForm').classList.add('hidden');
+}
+function showRegister(){
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('registerForm').classList.remove('hidden');
+}
+function showForgot(){
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('forgotForm').classList.remove('hidden');
+}
+
+function register(){
+  let u=document.getElementById('regUser').value;
+  let e=document.getElementById('regEmail').value;
+  let p=document.getElementById('regPass').value;
+  if(!u||!e||!p){showAlert('Sab fields bharo','error');return}
+  let users=JSON.parse(localStorage.getItem('doodhUsers')||'{}');
+  if(users[u]){showAlert('Username pehle se hai','error');return}
+  users[u]={email:e,password:p};
+  localStorage.setItem('doodhUsers',JSON.stringify(users));
+  showAlert('Account ban gaya! Login karo','success');
+  showLogin();
+}
+
+function login(){
+  let u=document.getElementById('username').value;
+  let p=document.getElementById('password').value;
+  let users=JSON.parse(localStorage.getItem('doodhUsers')||'{}');
+  if(users[u]&&users[u].password==p){
+    currentUser=u;
+    localStorage.setItem('doodhUser',u);
+    localStorage.setItem('doodhExpiry',new Date().getTime()+7*24*60*60*1000);
+    showMainApp();
+  }else{
+    showAlert('Username ya Password ghalat','error');
+  }
+}
+
+function sendCode(){
+  let e=document.getElementById('forgotEmail').value;
+  let users=JSON.parse(localStorage.getItem('doodhUsers')||'{}');
+  let found=Object.keys(users).find(u=>users[u].email==e);
+  if(!found){showAlert('Email nahi mila','error');return}
+  resetCodeTemp=Math.floor(1000+Math.random()*9000);
+  alert('Demo Code: '+resetCodeTemp+'\nAsal me email jayega');
+  document.getElementById('codeDiv').classList.remove('hidden');
+}
+
+function resetPassword(){
+  let code=document.getElementById('resetCode').value;
+  let newP=document.getElementById('newPass').value;
+  if(code!=resetCodeTemp){showAlert('Code ghalat','error');return}
+  let e=document.getElementById('forgotEmail').value;
+  let users=JSON.parse(localStorage.getItem('doodhUsers')||'{}');
+  let found=Object.keys(users).find(u=>users[u].email==e);
+  users[found].password=newP;
+  localStorage.setItem('doodhUsers',JSON.stringify(users));
+  showAlert('Password badal gaya! Login karo','success');
+  showLogin();
+}
+
+function logout(){
+  localStorage.removeItem('doodhUser');
+  localStorage.removeItem('doodhExpiry');
+  location.reload();
+}
+
+function showMainApp(){
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('mainApp').classList.remove('hidden');
+  document.getElementById('welcomeUser').innerText='Hi, '+currentUser;
+  loadCustomers();
+  loadEntries();
+  updateDashboard();
+}
+
+function showTab(tab){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.add('hidden'));
+  document.getElementById(tab).classList.remove('hidden');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  if(tab=='entry')loadEntries();
+  if(tab=='dashboard')updateDashboard();
+}
+
+function getData(key){
+  return JSON.parse(localStorage.getItem(currentUser+'_'+key)||'[]');
+}
+function saveData(key,data){
+  localStorage.setItem(currentUser+'_'+key,JSON.stringify(data));
+}
+
+function addCustomer(){
+  let name=document.getElementById('custName').value;
+  let phone=document.getElementById('custPhone').value;
+  let addr=document.getElementById('custAddress').value;
+  let rate=document.getElementById('custRate').value;
+  let slot=document.getElementById('custSlot').value;
+  if(!name){alert('Naam daalo');return}
+  let customers=getData('customers');
+  customers.push({id:Date.now(),name,phone,addr,rate,slot});
+  saveData('customers',customers);
+  document.getElementById('custName').value='';
+  document.getElementById('custPhone').value='';
+  document.getElementById('custAddress').value='';
+  loadCustomers();
+  alert('Customer add ho gaya');
+}
+
+function loadCustomers(){
+  let customers=getData('customers');
+  let list=document.getElementById('customerList');
+  let select=document.getElementById('entryCustomer');
+  list.innerHTML='';
+  select.innerHTML='<option value="">Customer Chuno</option>';
+  customers.forEach(c=>{
+    list.innerHTML+=`<div class="customer-card">
+      <div class="customer-name">${c.name}</div>
+      <div class="customer-info">📞 ${c.phone} | 📍 ${c.addr}</div>
+      <div class="customer-info">💰 ${c.rate} Rs/L | ⏰ ${c.slot}</div>
+      <button class="btn-small btn-red" onclick="deleteCustomer(${c.id})">Delete</button>
+      <button class="btn-small btn-green" onclick="sendWhatsApp('${c.phone}','${c.name}')">WhatsApp</button>
+    </div>`;
+    select.innerHTML+=`<option value="${c.id}">${c.name}</option>`;
+  });
+}
+
+function deleteCustomer(id){
+  if(!confirm('Pakka delete karna?'))return;
+  let customers=getData('customers').filter(c=>c.id!=id);
+  saveData('customers',customers);
+  loadCustomers();
+}
+
+function addEntry(){
+  let date=document.getElementById('entryDate').value;
+  let custId=document.getElementById('entryCustomer').value;
+  let liters=parseFloat(document.getElementById('entryLiters').value);
+  let slot=document.getElementById('entrySlot').value;
+  let note=document.getElementById('entryNote').value;
+  if(!custId||!liters){alert('Customer aur Liter daalo');return}
+  let customers=getData('customers');
+  let cust=customers.find(c=>c.id==custId);
+  let entries=getData('entries');
+  entries.push({id:Date.now(),date,custId,custName:cust.name,liters,slot,note,rate:cust.rate,total:liters*cust.rate,paid:false});
+  saveData('entries',entries);
+  document.getElementById('entryLiters').value='';
+  document.getElementById('entryNote').value='';
+  loadEntries();
+  updateDashboard();
+  alert('Entry save ho gayi');
+}
+
+function loadEntries(){
+  let entries=getData('entries');
+  let today=new Date().toISOString().split('T')[0];
+  let todayEntries=entries.filter(e=>e.date==today);
+  let list=document.getElementById('entryList');
+  list.innerHTML='';
+  todayEntries.forEach(e=>{
+    list.innerHTML+=`<div class="entry-row">
+      <div><b>${e.custName}</b><br>${e.liters}L × ${e.rate} = ${e.total}Rs<br>${e.slot} ${e.paid?'✅ Paid':'⏳ Pending'}</div>
+      <button class="btn-small btn-red" onclick="deleteEntry(${e.id})">Del</button>
+    </div>`;
+  });
+}
+
+function deleteEntry(id){
+  let entries=getData('entries').filter(e=>e.id!=id);
+  saveData('entries',entries);
+  loadEntries();
+  updateDashboard();
+}
+
+function markPaid(){
+  let custId=document.getElementById('entryCustomer').value;
+  if(!custId){alert('Customer chuno');return}
+  let entries=getData('entries');
+  entries.forEach(e=>{if(e.custId==custId)e.paid=true});
+  saveData('entries',entries);
+  loadEntries();
+  updateDashboard();
+  alert('Sab paid mark ho gaya');
+}
+
+function updateDashboard(){
+  let entries=getData('entries');
+  let today=new Date().toISOString().split('T')[0];
+  let month=new Date().toISOString().slice(0,7);
+  let todayEntries=entries.filter(e=>e.date==today);
+  let monthEntries=entries.filter(e=>e.date.startsWith(month));
+  let todayL=todayEntries.reduce((s,e)=>s+e.liters,0);
+  let todayA=todayEntries.reduce((s,e)=>s+e.total,0);
+  let monthA=monthEntries.reduce((s,e)=>s+e.total,0);
+  let pending=monthEntries.filter(e=>!e.paid).reduce((s,e)=>s+e.total,0);
+  document.getElementById('todayLiters').innerText=todayL.toFixed(1)+' L';
+  document.getElementById('todayAmount').innerText=todayA+' Rs';
+  document.getElementById('monthAmount').innerText=monthA+' Rs';
+  document.getElementById('pendingAmount').innerText=pending+' Rs';
+}
+
+function sendWhatsApp(phone,name){
+  let entries=getData('entries');
+  let custEntries=entries.filter(e=>e.custName==name&&!e.paid);
+  let total=custEntries.reduce((s,e)=>s+e.total,0);
+  let msg=`*Doodh Khata - ${name}*%0A%0A`;
+  custEntries.forEach(e=>{msg+=`${e.date}: ${e.liters}L = ${e.total}Rs%0A`});
+  msg+=`%0A*Total Udhaar: ${total} Rs*%0A%0A_From: Doodh Khata Pro - Umair Mehboob_`;
+  window.open(`https://wa.me/92${phone}?text=${msg}`);
+}
+
+function generatePDF(type){
+  let entries=getData('entries');
+  let data=type=='week'?entries.slice(-7):entries.filter(e=>e.date.startsWith(new Date().toISOString().slice(0,7)));
+  let doc=new jsPDF();
+  doc.setFontSize(18);
+  doc.text('Doodh Khata Pro',105,15,{align:'center'});
+  doc.setFontSize(10);
+  doc.text('Created by Umair Mehboob',105,22,{align:'center'});
+  doc.setFontSize(12);
+  let y=35;
+  doc.text('Date',15,y);
+  doc.text('Customer',50,y);
+  doc.text('Liters',100,y);
+  doc.text('Rate',125,y);
+  doc.text('Total',150,y);
+  doc.text('Status',175,y);
+  y+=8;
+  let grandTotal=0;
+  data.forEach(e=>{
+    if(y>270){doc.addPage();y=20}
+    doc.text(e.date,15,y);
+    doc.text(e.custName.substring(0,15),50,y);
+    doc.text(e.liters.toString(),100,y);
+    doc.text(e.rate.toString(),125,y);
+    doc.text(e.total.toString(),150,y);
+    doc.text(e.paid?'Paid':'Pending',175,y);
+    grandTotal+=e.total;
+    y+=7;
+  });
+  y+=5;
+  doc.setFontSize(14);
+  doc.text(`Grand Total: ${grandTotal} Rs`,150,y);
+  doc.save(`DoodhKhata_${type}_${new Date().toISOString().split('T')[0]}.pdf`);
+}
+
+function showAlert(msg,type){
+  let div=document.getElementById('loginAlert');
+  div.className='alert alert-'+type;
+  div.innerText=msg;
+  setTimeout(()=>div.innerText='',3000);
+}
+</script>
+</body>
+</html>
